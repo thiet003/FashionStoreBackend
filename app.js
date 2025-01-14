@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-
+require('dotenv').config();
+const port = process.env.BACKEND_PORT || 5005;
 // Kết nối MySQL
 const pool = require('./db/connect_db');
 
@@ -16,6 +17,6 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+app.listen(port, () => {
+    console.log('Server is running on port ' + port);
 });
