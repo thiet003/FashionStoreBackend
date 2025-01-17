@@ -13,8 +13,11 @@ app.use(cors());
 
 // Routes
 const userRoute = require('./routers/user.route');
+const categoryRoute = require('./routers/category.route');
+const productRoute = require('./routers/product.route');
 app.use('/api/v1/user', userRoute);
-
+app.use('/api/v1/category', categoryRoute);
+app.use('/api/v1/product', productRoute);
 app.get('/', async (req, res) => {
     try {
         const [rows, fields] = await pool.query('SELECT * FROM address');
