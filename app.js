@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const swaggerSetup = require('./swagger');
 require('dotenv').config();
 
 // Kết nối MySQL
@@ -10,14 +11,17 @@ const pool = require('./db/connect_db');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-
+swaggerSetup(app);
 // Routes
 const userRoute = require('./routers/user.route');
 const categoryRoute = require('./routers/category.route');
 const productRoute = require('./routers/product.route');
+const orderRoute = require('./routers/order.route');
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/category', categoryRoute);
 app.use('/api/v1/product', productRoute);
+app.use('/api/v1/order', orderRoute);
+
 app.get('/', async (req, res) => {
     try {
         const [rows, fields] = await pool.query('SELECT * FROM address');
