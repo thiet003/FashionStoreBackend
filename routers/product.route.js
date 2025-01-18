@@ -4,7 +4,8 @@ const {addSize,
     addProduct, 
     getProducts,
     getDiscountProducts,
-    getNewProducts
+    getNewProducts,
+    getProductDetail
 } = require('../controllers/product.controller');
 
 // Thêm size
@@ -19,6 +20,8 @@ router.get('/', getProducts);
 router.get('/discount', getDiscountProducts);
 // Lấy danh sách sản phẩm mới
 router.get('/new', getNewProducts);
+// Lấy chi tiết sản phẩm
+router.get('/:id', getProductDetail);
 
 
 module.exports = router;
