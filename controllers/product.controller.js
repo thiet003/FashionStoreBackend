@@ -404,11 +404,66 @@ const getNewProducts = async (req, res) => {
   }
 };
 
+// Lấy chi tiết sản phẩm
+const getProductDetail = async (req, res) => {
+  // Lấy product_id từ URL
+  const productId = req.params.id;
 
+  try {
+    // Query lấy thông tin sản phẩm
+    const query = `SELECT * FROM product WHERE id = ?`;
+    const [products] = await pool.execute(query, [productId]);
+
+    // Kiểm tra xem sản phẩm có tồn tại không
+    if (products.length === 0) {
+      return res.status(404).json({ status: 'error', message: 'Không tìm thấy sản phẩm có id là ' + productId });
+    }
+
+    // Query lấy danh sách color và size của sản phẩm
+    const colorSizeQuery = `
+      SELECT 
+        color.color_name, 
+        size.size_name, 
+        product_quantity.quantity 
+      FROM product_quantity 
+      INNER JOIN color ON product_quantity.color_id = color.id 
+      INNER JOIN size ON product_quantity.size_id = size.id 
+      WHERE product_quantity.product_id = ?
+    `;
+    const [colorSizeData] = await pool.execute(colorSizeQuery, [productId]);
+
+    // Query lấy danh sách ảnh chi tiết của sản phẩm
+    const imageQuery = `SELECT image_link FROM product_image WHERE product_id = ?`;
+    const [imageData] = await pool.execute(imageQuery, [productId]);
+
+    // Kết quả trả về
+    const product = products[0];
+    const colorSize = colorSizeData.map(data => ({
+      color: data.color_name,
+      size: data.size_name,
+      quantity: data.quantity
+    }));
+    const images = imageData.map(data => data.image_link);
+
+    res.json({
+      status: 'success',
+      data: {
+        ...product,
+        colorSize,
+        images
+      }
+    });
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ status: 'error', message: 'Lỗi kết nối đến server!' });
+  }
+}
 module.exports = {
   addSize,
   addProduct,
   getProducts,
   getDiscountProducts,
-  getNewProducts
+  getNewProducts,
+  getProductDetail
 }
